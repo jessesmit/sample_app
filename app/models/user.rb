@@ -27,16 +27,17 @@ class User < ActiveRecord::Base
   before_save :encrypt_password 
   
   def has_password?(submitted_password)
-    puts "in has_password?"
     encrypted_password == encrypt(submitted_password)
   end
 
   def self.authenticate(email, submitted_password)
     user = find_by_email(email)
-    puts "found user :#{user}"
     return nil  if user.nil?
-    puts "didnt return nil"
     return user if user.has_password?(submitted_password)
+  end
+  def self.authenticate_with_salt(id, cookie_salt)
+    user = find_by_id(id)
+    (user && user.salt == cookie_salt) ? user : nil
   end
  
   private
